@@ -5,7 +5,7 @@ BUILD_TOP_DIR=..
 BUILD_KERNEL_DIR=$(pwd)
 
 SECURE_SCRIPT=$BUILD_TOP_DIR/../buildscript/tools/signclient.jar
-BUILD_CROSS_COMPILE=../../prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
+BUILD_CROSS_COMPILE=/home/tamirda/kernel/Toolchain/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-
 BUILD_JOB_NUMBER=`grep processor /proc/cpuinfo|wc -l`
 
 # Default Python version is 2.7
@@ -13,10 +13,10 @@ mkdir -p bin
 ln -sf /usr/bin/python2.7 ./bin/python
 export PATH=$(pwd)/bin:$PATH
 
-KERNEL_DEFCONFIG=msm8974_sec_defconfig
-DEBUG_DEFCONFIG=msm8974_sec_eng_defconfig
+KERNEL_DEFCONFIG=PhoeniX_defconfig
+DEBUG_DEFCONFIG=
 SELINUX_DEFCONFIG=selinux_defconfig
-SELINUX_LOG_DEFCONFIG=selinux_log_defconfig
+SELINUX_LOG_DEFCONFIG=
 
 #sed -i.bak "s/CONFIG_MODVERSIONS=y/CONFIG_MODVERSIONS=n/g" ${BUILD_KERNEL_DIR}/arch/arm/configs/${KERNEL_DEFCONFIG}
 
@@ -166,7 +166,7 @@ FUNC_APPEND_DTB()
 }
 
 INSTALLED_DTIMAGE_TARGET=${BUILD_KERNEL_OUT_DIR}/dt.img
-DTBTOOL=$BUILD_TOP_DIR/kernel/tools/dtbTool
+DTBTOOL=$BUILD_TOP_DIR/S5/tools/dtbTool
 
 FUNC_BUILD_DTIMAGE_TARGET()
 {
@@ -181,7 +181,7 @@ FUNC_BUILD_DTIMAGE_TARGET()
 		if ! [ -d $BUILD_TOP_DIR/out/host/linux-x86/bin ] ; then
 			mkdir -p $BUILD_TOP_DIR/out/host/linux-x86/bin
 		fi
-		cp $BUILD_TOP_DIR/kernel/tools/dtbTool $DTBTOOL
+		cp $BUILD_TOP_DIR/S5/tools/dtbTool $DTBTOOL
 	fi
 
 	echo "$DTBTOOL -o $INSTALLED_DTIMAGE_TARGET -s $BOARD_KERNEL_PAGESIZE \
@@ -214,11 +214,6 @@ FUNC_BUILD_KERNEL()
 	if [ "$BUILD_COMMAND" == "" ]; then
 		SECFUNC_PRINT_HELP;
 		exit -1;
-	fi
-
-	if ! [ -e $PRODUCT_OUT/ramdisk.img ] ; then
-		echo "error no ramdisk : "$PRODUCT_OUT/ramdisk.img ""
-		exit -1
 	fi
 
 	make -C $BUILD_KERNEL_DIR O=$BUILD_KERNEL_OUT_DIR -j$BUILD_JOB_NUMBER ARCH=arm \
@@ -310,7 +305,7 @@ FUNC_MKBOOTIMG()
 
 FUNC_SEANDROID()
 {
-	echo -n "SEANDROIDENFORCE" >> $PRODUCT_OUT/boot.img
+	echo -n "SEANDROIDENFORCE" >> boot.img
 }
 
 FUNC_SECURE_SIGNING()
@@ -364,3 +359,4 @@ rm -rf ./build.log
 	let "ELAPSED_TIME=$END_TIME-$START_TIME"
 	echo "Total compile time is $ELAPSED_TIME seconds"
 ) 2>&1	 | tee -a ./build.log
+
